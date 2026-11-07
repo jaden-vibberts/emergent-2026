@@ -1,0 +1,43 @@
+@import "tailwindcss";
+:root { color-scheme: light; --ink: #182a2b; --muted: #657372; --line: #dce2df; --green: #245c4c; }
+.debug-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
+.debug-config { font-size: 12px; color: var(--muted); margin-bottom: 24px; line-height: 1.8; }
+.debug-stale { border: 2px solid #c43b3b !important; background: #fffafa !important; }
+.debug-alert { color: #a22121; font-size: 13px; font-weight: 600; margin-top: 18px; }
+.rms-chart { margin: 22px 0; }.rms-chart svg { width: 100%; height: auto; }.rms-chart text { font-size: 11px; fill: #657372; }.rms-chart figcaption { font-size: 11px; color: #657372; line-height: 1.6; }
+.reading-scroll { overflow-x: auto; max-height: 340px; }.reading-table { width: 100%; border-collapse: collapse; font-size: 12px; font-variant-numeric: tabular-nums; text-align: left; }.reading-table caption { text-align: left; font-size: 11px; padding-bottom: 10px; color: #657372; }.reading-table th { position: sticky; top: 0; background: #edf1ed; }.reading-table td, .reading-table th { padding: 9px 8px; border-bottom: 1px solid #dce2df; white-space: nowrap; }
+@media (max-width: 700px) { .debug-grid { grid-template-columns: 1fr; } }
+body { margin: 0; font-family: Arial, Helvetica, sans-serif; background: #f5f6f2; color: var(--ink); }
+a, button { -webkit-tap-highlight-color: transparent; }
+a:focus-visible, button:focus-visible { outline: 3px solid #357c66; outline-offset: 5px; }
+.page-shell { max-width: 1100px; padding: 0 36px; margin: auto; }
+.site-header { min-height: 92px; display: flex; align-items: center; justify-content: space-between; gap: 20px; border-bottom: 1px solid var(--line); }
+.wordmark { font-weight: 700; letter-spacing: -.6px; font-size: 23px; display: inline-flex; align-items: center; gap: 9px; }
+.wordmark-dot { width: 8px; height: 8px; background: var(--green); border-radius: 50%; }
+.nav-link { font-size: 13px; font-weight: 600; }
+.nav-link:hover, .machine-name a:hover { color: var(--green); text-decoration: underline; text-underline-offset: 5px; }
+.page-heading { padding: 56px 0 32px; }
+.eyebrow { font-size: 10px; letter-spacing: .16em; font-weight: 700; color: var(--muted); }
+.page-heading h1 { font-size: clamp(32px, 5vw, 49px); letter-spacing: -.045em; line-height: 1.1; margin: 13px 0 16px; font-weight: 600; }
+.page-heading > p:last-of-type { color: var(--muted); font-size: 15px; line-height: 1.6; }
+.live-line { display: flex; align-items: center; gap: 8px; color: var(--muted); font-size: 12px; margin: 0 0 22px; }
+.signal { width: 6px; height: 6px; background: #35715c; border-radius: 50%; }.signal-warn { background: #a7742c; }
+.machine-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+.machine-card { padding: 26px; border: 1px solid var(--line); background: #fff; border-radius: 8px; }
+.card-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 23px; }
+.machine-kind { font-size: 10px; font-weight: 700; letter-spacing: .14em; color: var(--muted); }
+.demo-tag { display: inline-block; font-size: 10px; font-weight: 600; color: #795b22; background: #f7f1e4; border: 1px solid #e9dcc1; padding: 3px 7px; border-radius: 3px; }
+.machine-name { font-size: 22px; font-weight: 600; letter-spacing: -.6px; }.machine-name a { display: flex; align-items: center; justify-content: space-between; gap: 14px; }.card-arrow { font-size: 19px; font-weight: 400; color: var(--muted); }
+.location { color: var(--muted); font-size: 12px; margin-top: 6px; }
+.status-block { margin: 24px 0; border-left: 3px solid #98a6a0; padding-left: 14px; }.status-in_use { border-color: #537c9e; }.status-done { border-color: #b48842; }.status-likely_free { border-color: #41816b; }
+.status-text { font-size: 25px; letter-spacing: -.7px; line-height: 1.2; margin-top: 8px; font-weight: 600; }
+.machine-facts { border-top: 1px solid #ebeeeb; padding-top: 17px; font-size: 12px; }.machine-facts > div { display: flex; justify-content: space-between; gap: 18px; margin-top: 8px; }.machine-facts dt { color: var(--muted); }.machine-facts dd { text-align: right; font-weight: 600; font-variant-numeric: tabular-nums; }
+.helper, .device-note { font-size: 12px; line-height: 1.6; color: var(--muted); margin-top: 15px; }.device-note { color: #795b22; }.demo-explanation { border-top: 1px solid var(--line); padding-top: 16px; }
+.detail-shell { max-width: 840px; }.machine-detail { padding: 34px; }.machine-detail .status-text { font-size: clamp(34px, 6vw, 52px); letter-spacing: -1.8px; }.machine-detail .status-block { margin: 36px 0; }.machine-detail .machine-facts { font-size: 14px; }
+.site-footer { font-size: 11px; color: var(--muted); line-height: 1.7; padding: 28px 0 40px; max-width: 560px; }
+.notice, .loading-panel { padding: 22px; margin: 16px 0; border: 1px solid var(--line); border-radius: 6px; line-height: 1.6; font-size: 14px; }.notice { background: #faf4e7; border-color: #e9dcc1; }.loading-panel { background: #fff; }
+.print-button { margin-top: 24px; background: var(--ink); color: white; border-radius: 4px; padding: 12px 20px; font-size: 13px; cursor: pointer; }
+.qr-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px; padding-bottom: 40px; }.qr-label { background: white; border: 1px dashed #aab6b0; padding: 28px; display: flex; flex-direction: column; align-items: center; text-align: center; break-inside: avoid; }
+.qr-label h2 { font-size: 23px; font-weight: 600; margin: 12px 0 6px; }.qr-label > p:not(.eyebrow) { color: var(--muted); font-size: 13px; }.qr-label img { max-width: 100%; height: auto; }.qr-label strong { font-size: 15px; }.qr-url { font-size: 10px; overflow-wrap: anywhere; margin: 12px 0; }
+@media (max-width: 600px) { .page-shell { padding: 0 20px; }.site-header { min-height: 76px; }.wordmark { font-size: 20px; }.nav-link { font-size: 11px; }.page-heading { padding: 38px 0 28px; }.machine-grid, .qr-grid { grid-template-columns: 1fr; }.machine-card, .machine-detail { padding: 23px; }.machine-detail .status-text { letter-spacing: -1px; }.machine-facts > div { gap: 12px; } }
+@media print { @page { margin: 12mm; } body { background: white !important; color: black; }.no-print { display: none !important; }.page-shell { max-width: none; padding: 0; }.qr-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10mm; }.qr-label { padding: 6mm; }.qr-label img { width: 42mm; height: 42mm; }.qr-label h2 { font-size: 18px; }.demo-tag { color: black; border-color: #999; } }
