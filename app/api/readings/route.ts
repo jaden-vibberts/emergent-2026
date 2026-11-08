@@ -3,8 +3,11 @@ import { getSupabase } from "@/lib/supabase";
 import { nextState, type MachineState } from "@/lib/stateMachine";
 import { MACHINE_CONFIG } from "@/lib/machine-config";
 import { validateReading, type DeviceReading } from "@/lib/validateReading";
+import { after } from "next/server";
+import { deliverMachinePush, pushSettings } from "@/lib/push";
 
 export const runtime = "nodejs";
+export const maxDuration = 60;
 
 export async function POST(request: Request) {
   const secret = process.env.DEVICE_INGEST_KEY;
@@ -50,7 +53,14 @@ export async function POST(request: Request) {
         p_machine_id: body.device, p_expected_revision: current.revision, p_next: next,
       });
       if (saveError) throw saveError;
-      if (saved) return Response.json({ machine: body.device, state: next.state, state_since: next.state_since, time_scale: MACHINE_CONFIG.TIME_SCALE });
+      if (saved) {
+        // after() keeps this work within Vercel's request lifetime. The durable
+        // queue is also checked on later readings, even after the door opens.
+        if (pushSettings() || (current.state === "IN_USE" && next.state === "DONE")) {
+          after(() => deliverMachinePush(body.device, machine.name));
+        }
+        return Response.json({ machine: body.device, state: next.state, state_since: next.state_since, time_scale: MACHINE_CONFIG.TIME_SCALE });
+      }
       // Another request won the race. Re-read and recompute; no partial writes occurred.
     }
     return Response.json({ error: "Machine is busy. Send the next reading." }, { status: 409 });

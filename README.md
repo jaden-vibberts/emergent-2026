@@ -319,3 +319,5 @@ This step tests status pages over local Wi-Fi. PWA installation and push
 notifications will be handled separately with HTTPS in their own step.
 
 Deployment and debug instructions: [Step 3.5](DEPLOYMENT.md).
+
+PWA and notification setup: [Step 4](PUSH.md).
