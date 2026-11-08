@@ -64,6 +64,7 @@ export default function LiveMachines({ deviceId }: { deviceId?: string }) {
           {!deviceId && <Porthole status={offline ? "OFFLINE" : machine.state} />}
           <NameHeading className="machine-name">{deviceId ? machine.name : <Link href={`/m/${encodeURIComponent(machine.id)}`}>{machine.name}<span aria-hidden="true" className="card-arrow">↗</span></Link>}</NameHeading>
           <p className="location">{machine.location}</p>
+          {deviceId && <Porthole status={offline ? "OFFLINE" : machine.state} />}
           <div className={`status-block status-${offline ? "offline" : machine.state.toLowerCase()}`}>
             <p className="eyebrow">{offline || error ? "Last known status" : "Machine status"}</p>
             <p className="status-text" role="status">{offline ? "Offline" : statusLabels[machine.state] ?? "Unknown"}</p>

@@ -169,3 +169,34 @@ button, input, select { font: inherit; }
 @keyframes porthole-rise { 0% { transform: translateY(10px); opacity: 0; } 20% { opacity: .75; } 85% { opacity: .5; } 100% { transform: translateY(-72px); opacity: 0; } }
 @media (min-width: 600px) { .porthole-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }.machine-card.porthole-card { padding: 28px; }.porthole { width: 232px; } }
 @media (prefers-reduced-motion: reduce) { .porthole *, .porthole { animation: none !important; transition: none !important; } }
+
+/* Stage 3: machine detail presentation. Notification code and text are untouched. */
+.detail-shell { max-width: 760px; }
+.detail-shell .machine-detail { padding: var(--space-5); border-radius: var(--radius-lg); }
+.machine-detail .card-top { margin-bottom: var(--space-5); }
+.machine-detail .machine-name { text-align: center; font-size: 27px; font-weight: 800; }
+.machine-detail .location { text-align: center; line-height: 1.5; }
+.machine-detail .porthole { width: min(100%, 300px); margin: 12px auto 4px; }
+.machine-detail .status-block { border: 0; padding: 0; margin: 0 auto var(--space-5); text-align: center; max-width: 540px; }
+.machine-detail .status-text { font-size: clamp(28px, 6vw, 40px); line-height: 1.2; letter-spacing: -.8px; font-weight: 800; margin-top: 10px; text-wrap: balance; }
+.machine-detail .status-in_use .status-text { color: var(--color-ocean-dark); }
+.machine-detail .status-done .status-text { color: var(--color-done); }
+.machine-detail .status-likely_free .status-text { color: var(--color-free); }
+.machine-detail .machine-facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(175px, 1fr)); gap: var(--space-3); border: 0; padding-top: var(--space-2); }
+.machine-detail .machine-facts > div { display: flex; flex-direction: column; align-items: center; justify-content: flex-start; gap: var(--space-2); margin: 0; padding: 18px var(--space-3); border: 1px solid var(--color-line); border-radius: var(--radius-md); background: var(--color-background); text-align: center; }
+.machine-detail .machine-facts dt { font-size: 12px; }
+.machine-detail .machine-facts dd { font-size: 17px; font-weight: 650; text-align: center; line-height: 1.5; }
+.machine-detail > .helper, .machine-detail > .offline-note { text-align: center; margin-inline: auto; max-width: 490px; }
+.machine-detail .demo-explanation { padding-top: var(--space-4); }
+.machine-detail.machine-offline .machine-facts > div { background: var(--color-offline-soft); }
+.detail-shell .notify-panel { padding: var(--space-5); margin-top: var(--space-5); border-radius: var(--radius-lg); background: var(--color-foam); box-shadow: var(--shadow-soft); }
+.detail-shell .notify-panel h2 { font-size: 25px; font-weight: 800; letter-spacing: -.5px; }
+.detail-shell .notify-panel > p { line-height: 1.7; }
+.detail-shell .notify-panel .print-button { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; min-height: 58px; padding: 16px 18px; margin-top: var(--space-5); background: var(--color-ocean); color: var(--color-foam); border: 1px solid transparent; border-radius: var(--radius-md); font-size: 16px; font-weight: 700; line-height: 1.4; box-shadow: var(--shadow-lift); transition: background-color .2s ease, box-shadow .2s ease; }
+.detail-shell .notify-panel .print-button::before { content: ''; flex: 0 0 21px; width: 21px; height: 21px; background: currentColor; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2a2 2 0 0 0-2 2 6 6 0 0 0-4 6v5l-3 3h18l-3-3v-5a6 6 0 0 0-4-6 2 2 0 0 0-2-2zm-3 18a3 3 0 0 0 6 0z'/%3E%3C/svg%3E") center / contain no-repeat; }
+.detail-shell .notify-panel .print-button:hover:not(:disabled) { background: var(--color-ocean-dark); box-shadow: var(--shadow-soft); }
+.detail-shell .notify-panel .print-button:disabled { opacity: 1; background: var(--color-offline-soft); color: var(--color-offline); border-color: var(--color-line); box-shadow: none; }
+.detail-shell .notify-panel .install-banner { display: flex; align-items: flex-start; gap: 12px; padding: var(--space-4); margin-top: var(--space-4); border: 1px solid var(--color-line); border-radius: var(--radius-md); background: var(--color-header); color: var(--color-navy); }
+.detail-shell .notify-panel .install-banner::before { content: ''; width: 24px; height: 24px; flex: 0 0 24px; margin-top: 2px; background: var(--color-ocean); mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cg fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 15V2m-4 4 4-4 4 4M6 10H4v11h16V10h-2'/%3E%3C/g%3E%3C/svg%3E") center / contain no-repeat; }
+.detail-shell .notify-panel [role="status"] { margin-top: var(--space-4); color: var(--color-navy); }
+@media (min-width: 600px) { .detail-shell .machine-detail, .detail-shell .notify-panel { padding: var(--space-6); }.machine-detail .porthole { width: 320px; }.machine-detail .machine-name { font-size: 30px; } }
