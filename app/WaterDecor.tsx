@@ -12,7 +12,7 @@ export function BottomWaves() {
 
 export function WaveDivider() {
   return <div className="wave-divider" aria-hidden="true"><svg viewBox="0 0 1000 32" preserveAspectRatio="none">
-    <path d="M0 14Q125 0 250 14T500 14T750 14T1000 14V23Q875 9 750 23T500 23T250 23T0 23Z" />
+    <path d="M0 14Q125 0 250 14T500 14T750 14T1000 14L1000 32L0 32Z" />
   </svg></div>;
 }
 

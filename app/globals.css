@@ -246,23 +246,23 @@ button, input, select { font: inherit; }
 @media (max-width: 480px) { .usage-controls { align-items: stretch; flex-direction: column; }.usage-controls .usage-segment { align-self: flex-start; }.usage-heatmap { padding: 18px 14px; }.usage-window-card li { flex-wrap: wrap; gap: 8px; } }
 
 /* UI polish, stage 1: water decoration lives behind content, never over it. */
-body { position: relative; isolation: isolate; }
+body { position: relative; isolation: isolate; overflow-x: clip; }
 .bottom-waves { position: fixed; inset: auto 0 0; height: clamp(90px, 16vh, 170px); z-index: -1; overflow: hidden; pointer-events: none; opacity: .14; }
 .bottom-waves svg { display: block; width: 100%; height: 100%; overflow: hidden; }
 .bottom-wave-back { fill: var(--color-heat-2); animation: bottom-wave-drift 36s ease-in-out infinite alternate; }
 .bottom-wave-front { fill: var(--color-ocean); opacity: .35; animation: bottom-wave-drift 49s ease-in-out infinite alternate-reverse; }
 @keyframes bottom-wave-drift { from { transform: translateX(-70px); } to { transform: translateX(70px); } }
-.wave-divider { height: 28px; margin: 0 0 var(--space-5); overflow: hidden; pointer-events: none; }
+.wave-divider { display: block; height: 28px; margin: 0 0 var(--space-5); overflow: hidden; pointer-events: none; }
 .wave-divider svg { display: block; width: 100%; height: 100%; fill: var(--color-heat-2); opacity: .6; }
 .detail-grid + .wave-divider { margin-top: var(--space-5); }
 .detail-shell .wave-divider { margin-top: var(--space-5); }
 /* A quiet decorative separator between machine groups and dashboard sections. */
 .machine-group + .machine-group::before, .usage-heatmap::before {
   content: ''; display: block; height: 20px; margin-bottom: var(--space-5); background: var(--color-heat-2); opacity: .6; pointer-events: none;
-  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1000 32' preserveAspectRatio='none'%3E%3Cpath d='M0 14Q125 0 250 14T500 14T750 14T1000 14V23Q875 9 750 23T500 23T250 23T0 23Z'/%3E%3C/svg%3E") center / 100% 100% no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1000 32' preserveAspectRatio='none'%3E%3Cpath d='M0 14Q125 0 250 14T500 14T750 14T1000 14L1000 32L0 32Z'/%3E%3C/svg%3E") center / 100% 100% no-repeat;
 }
 .water-footer { position: relative; isolation: isolate; margin-top: var(--space-8); padding: 32px 24px 36px; border-radius: 0 0 var(--radius-md) var(--radius-md); background: var(--color-header); color: var(--color-muted); }
-.footer-wave { position: absolute; left: 0; top: -30px; width: 100%; height: 31px; fill: var(--color-header); pointer-events: none; }
+.footer-wave { display: block; position: absolute; left: 0; top: -30px; width: 100%; height: 31px; fill: var(--color-header); pointer-events: none; }
 .water-footer-copy { position: relative; z-index: 1; max-width: 560px; font-size: 12px; line-height: 1.8; }
 .footer-bubbles { position: absolute; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; border-radius: inherit; }
 .footer-bubbles span { position: absolute; bottom: -32px; width: 24px; height: 24px; border: 1px solid var(--color-ocean); border-radius: 50%; opacity: 0; animation: footer-bubble-rise 19s linear infinite; }
@@ -272,3 +272,14 @@ body { position: relative; isolation: isolate; }
 @keyframes footer-bubble-rise { 0% { transform: translateY(0); opacity: 0; } 20%, 65% { opacity: .09; } 100% { transform: translateY(-180px); opacity: 0; } }
 @media (prefers-reduced-motion: reduce) { .bottom-waves *, .footer-bubbles span { animation: none !important; transform: none; }.footer-bubbles { display: none; } }
 @media print { .bottom-waves, .wave-divider, .footer-bubbles, .footer-wave, .machine-group + .machine-group::before, .usage-heatmap::before { display: none; }.water-footer { background: white; color: black; margin-top: 24px; } }
+
+/* Full-bleed decoration: keep text in its existing column and clip only viewport overflow. */
+.wave-divider, .machine-group + .machine-group::before, .usage-heatmap::before {
+  width: 100vw;
+  max-width: none;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+}
+.water-footer { width: 100vw; margin-left: calc(50% - 50vw); margin-right: calc(50% - 50vw); border-radius: 0; }
+.water-footer-copy { margin-inline: auto; }
+@media print { .water-footer { width: auto; margin-inline: 0; } }
