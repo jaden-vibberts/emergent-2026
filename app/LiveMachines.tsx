@@ -47,9 +47,9 @@ export default function LiveMachines({ deviceId }: { deviceId?: string }) {
         const offline = isOffline(machine.last_seen, now);
         const known = !!machine.last_seen;
         const estimate = remainingLabel(machine, now);
-        const demo = /demo/i.test(machine.name) || /demo/i.test(machine.location);
+        const demo = machine.is_demo;
         return <article key={machine.id} className={`machine-card ${deviceId ? "machine-detail" : ""} ${offline ? "machine-offline" : ""}`}>
-          <div className="card-top"><span className="machine-kind">{machine.id.startsWith("dryer") ? "DRYER" : machine.id.startsWith("washer") ? "WASHER" : "MACHINE"}</span>{demo && <span className="demo-tag">Demo data</span>}</div>
+          <div className="card-top"><span className="machine-kind">{machine.id.startsWith("dryer") ? "DRYER" : machine.id.startsWith("washer") ? "WASHER" : "MACHINE"}</span>{demo && <span className="demo-tag">Demo machine</span>}</div>
           <h2 className="machine-name">{deviceId ? machine.name : <Link href={`/m/${encodeURIComponent(machine.id)}`}>{machine.name}<span aria-hidden="true" className="card-arrow">↗</span></Link>}</h2>
           <p className="location">{machine.location}</p>
           <div className={`status-block status-${offline ? "offline" : machine.state.toLowerCase()}`}>

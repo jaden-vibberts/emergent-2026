@@ -49,9 +49,9 @@ export default function DebugPage() {
     <div className="debug-grid">{snapshot?.machines.map((machine) => {
       const offline = isOffline(machine.last_seen, now);
       const chart = chartData(machine.readings, snapshot.threshold);
-      const demo = /demo/i.test(`${machine.name} ${machine.location}`);
+      const demo = machine.is_demo;
       return <article key={machine.id} className={`machine-card debug-card ${offline ? "machine-offline" : ""}`}>
-        <div className="card-top"><Link className="machine-name" href={`/m/${encodeURIComponent(machine.id)}`}>{machine.name}</Link>{demo && <span className="demo-tag">Demo data</span>}</div>
+        <div className="card-top"><Link className="machine-name" href={`/m/${encodeURIComponent(machine.id)}`}>{machine.name}</Link>{demo && <span className="demo-tag">Demo machine</span>}</div>
         <p className="location">{machine.id} · {machine.location}</p>
         <p className="status-text" role="status">{offline ? "Offline" : "Online"}</p>
         {offline && <p className="offline-note">{lastSeenLabel(machine.last_seen, now)}</p>}

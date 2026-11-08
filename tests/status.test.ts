@@ -13,7 +13,7 @@ test("median requires enough usable history and handles outliers and even counts
 test("estimates use elapsed run time, never promise zero, and stop when device is stale", () => {
   const now = Date.UTC(2026, 0, 1);
   const machine: MachineView = {
-    id: "washer-1", name: "Washer 1 (demo)", location: "Demo room", state: "IN_USE",
+    id: "washer-1", name: "Washer 1 (demo)", location: "Demo room", state: "IN_USE", is_demo: true,
     state_since: new Date(now - 30_000).toISOString(), run_started_at: new Date(now - 30_000).toISOString(),
     last_seen: new Date(now).toISOString(), median_seconds: null, history_count: 0,
   };

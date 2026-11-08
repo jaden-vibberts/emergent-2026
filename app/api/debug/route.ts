@@ -6,7 +6,7 @@ export async function GET() {
   const headers = { "Cache-Control": "no-store" };
   try {
     const db = getSupabase();
-    const { data, error } = await db.from("machines").select("id, name, location").order("id");
+    const { data, error } = await db.from("machines").select("id, name, location, is_demo").order("id");
     if (error) throw error;
     const machines = await Promise.all((data ?? []).map(async (machine) => {
       const [state, readings] = await Promise.all([

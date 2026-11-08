@@ -1,7 +1,7 @@
 export const DEBUG_POLL_MS = 2000;
 export type DebugReading = { id: number; created_at: string; rms: number; door_open: boolean };
 export type DebugMachine = {
-  id: string; name: string; location: string;
+  id: string; name: string; location: string; is_demo: boolean;
   state: string | null; state_since: string | null; last_seen: string | null;
   readings: DebugReading[];
 };

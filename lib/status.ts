@@ -12,7 +12,7 @@ export function lastSeenLabel(lastSeen: string | null, now: number) {
   return `Last seen ${minutes} ${minutes === 1 ? "minute" : "minutes"} ago`;
 }
 export type MachineView = {
-  id: string; name: string; location: string; state: string;
+  id: string; name: string; location: string; state: string; is_demo: boolean;
   state_since: string | null; last_seen: string | null; run_started_at: string | null;
   median_seconds: number | null; history_count: number;
 };

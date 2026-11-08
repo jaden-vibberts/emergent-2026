@@ -323,3 +323,5 @@ Deployment and debug instructions: [Step 3.5](DEPLOYMENT.md).
 PWA and notification setup: [Step 4](PUSH.md).
 
 Usage dashboard setup and calculation notes: [Step 6](DASHBOARD.md).
+
+Safe demo history and optional live simulator: [Step 7](DEMO.md).
