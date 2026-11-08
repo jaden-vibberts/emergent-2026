@@ -1,4 +1,5 @@
 import Link from "next/link";
+import ThemeToggle from "./ThemeToggle";
 
 export default function SpinSenseHeader() {
   return <header className="spin-header no-print">
@@ -15,11 +16,11 @@ export default function SpinSenseHeader() {
         </svg>
         <span><span className="spin-brand-name">SpinSense</span><span className="spin-brand-caption">A little clarity. A lighter laundry day.</span></span>
       </Link>
-      <nav className="spin-nav" aria-label="Main navigation">
+      <div className="spin-header-actions"><nav className="spin-nav" aria-label="Main navigation">
         <Link href="/">Machines</Link>
         <Link href="/dashboard">Usage dashboard</Link>
         <Link href="/qr">QR labels <span aria-hidden="true">↗</span></Link>
-      </nav>
+      </nav><ThemeToggle /></div>
     </div>
     <svg className="header-wave" viewBox="0 0 1440 52" preserveAspectRatio="none" aria-hidden="true">
       <path d="M0 18C220 65 370-6 610 19s380 22 560 0 220-2 270 8v25H0Z" fill="var(--color-aqua)" opacity=".18" />

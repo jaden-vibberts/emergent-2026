@@ -17,6 +17,9 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = { width: "device-width", initialScale: 1, themeColor: "#096B9B" };
 
+// Runs before page content is parsed; storage access may be blocked in private browsers.
+const themeInit = `(function(){var t;try{t=localStorage.getItem('spinsense-theme')}catch(e){}if(t!=='light'&&t!=='dark')t=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';document.documentElement.dataset.theme=t;var m=document.querySelector('meta[name="theme-color"]');if(m)m.content=t==='dark'?'#081824':'#096B9B'})()`;
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
-  return <html lang="en" className={`${displayFont.variable} ${bodyFont.variable}`}><body><BottomWaves /><PwaSetup /><SpinSenseHeader />{children}</body></html>;
+  return <html lang="en" suppressHydrationWarning className={`${displayFont.variable} ${bodyFont.variable}`}><body><script dangerouslySetInnerHTML={{ __html: themeInit }} /><BottomWaves /><PwaSetup /><SpinSenseHeader />{children}</body></html>;
 }
