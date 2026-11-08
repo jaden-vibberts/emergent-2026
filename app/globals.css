@@ -150,15 +150,16 @@ button, input, select { font: inherit; }
 .porthole-fasteners { fill: var(--color-line); }
 .porthole-reflection { stroke: var(--color-foam); opacity: .85; }
 .porthole-glyph { stroke: var(--color-ocean-dark); }
-.porthole-water-back { fill: var(--color-aqua); opacity: .65; }
-.porthole-water-front { fill: var(--color-ocean); opacity: .23; }
-.porthole-in_use .porthole-water-back { animation: porthole-wave 9s linear infinite reverse; }
-.porthole-in_use .porthole-water-front { animation: porthole-wave 7s linear infinite; }
+.porthole-water-back { opacity: .8; transform-box: view-box; transform-origin: 0 0; }
+.porthole-water-front { opacity: .4; transform-box: view-box; transform-origin: 0 0; }
+.porthole-in_use .porthole-water-back { animation: porthole-water-drift 9s linear infinite reverse; }
+.porthole-in_use .porthole-water-front { animation: porthole-water-drift 7s linear infinite; }
 .porthole-bubbles circle { fill: var(--color-foam); stroke: var(--color-ocean); stroke-opacity: .12; animation: porthole-rise 7s ease-in infinite; }
 .porthole-bubbles circle:nth-child(2) { animation-delay: -3s; animation-duration: 8s; }
 .porthole-bubbles circle:nth-child(3) { animation-delay: -5s; animation-duration: 9s; }
 .porthole-done .porthole-glass { fill: var(--color-done-soft); }
-.porthole-done .porthole-water-back, .porthole-done .porthole-water-front { fill: var(--color-done); opacity: .14; }
+.porthole-done .porthole-water-back, .porthole-done .porthole-water-front { opacity: .2; }
+.porthole-done .porthole-water-back path, .porthole-done .porthole-water-front path { fill: var(--color-done); }
 .porthole-done .porthole-glyph { stroke: var(--color-done); }
 .porthole-likely_free .porthole-halo { fill: var(--color-free-soft); }
 .porthole-likely_free .porthole-inset { stroke: var(--color-free); stroke-opacity: .22; }
@@ -170,7 +171,7 @@ button, input, select { font: inherit; }
 .porthole-offline .porthole-glyph { stroke: var(--color-offline); }
 .porthole-card.machine-offline { box-shadow: none; }
 .porthole-card.machine-offline .card-arrow { color: var(--color-offline); }
-@keyframes porthole-wave { from { transform: translateX(0); } to { transform: translateX(120px); } }
+@keyframes porthole-water-drift { from { transform: translateX(0); } to { transform: translateX(120px); } }
 @keyframes porthole-rise { 0% { transform: translateY(10px); opacity: 0; } 20% { opacity: .75; } 85% { opacity: .5; } 100% { transform: translateY(-72px); opacity: 0; } }
 @media (min-width: 600px) { .porthole-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }.machine-card.porthole-card { padding: 28px; }.porthole { width: 232px; } }
 @media (prefers-reduced-motion: reduce) { .porthole *, .porthole { animation: none !important; transition: none !important; } }

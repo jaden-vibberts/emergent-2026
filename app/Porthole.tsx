@@ -4,20 +4,20 @@ import { useId } from "react";
 
 // Decorative only: the adjacent status text remains the accessible source of truth.
 export default function Porthole({ status }: { status: string }) {
-  const clipId = `porthole-${useId().replace(/:/g, "")}`;
+  const clipId = `porthole-${useId().replace(/[^a-zA-Z0-9_-]/g, "")}`;
   const running = status === "IN_USE";
   const water = running || status === "DONE";
   return <div className={`porthole porthole-${status.toLowerCase()}`} aria-hidden="true">
     <svg viewBox="0 0 240 240" fill="none" focusable="false">
-      <defs><clipPath id={clipId}><circle cx="120" cy="120" r="83" /></clipPath></defs>
+      <defs><clipPath id={clipId} clipPathUnits="userSpaceOnUse"><circle cx="120" cy="120" r="83" /></clipPath></defs>
       <circle className="porthole-halo" cx="120" cy="120" r="111" />
       <circle className="porthole-rim" cx="120" cy="120" r="98" strokeWidth="2" />
       <circle className="porthole-inset" cx="120" cy="120" r="87" strokeWidth="2" />
       <g clipPath={`url(#${clipId})`}>
         <circle className="porthole-glass" cx="120" cy="120" r="83" />
         {water && <>
-          <g className="porthole-water-back"><path d="M-120 124Q-90 108-60 124T0 124T60 124T120 124T180 124T240 124T300 124T360 124V240H-120Z" /></g>
-          <g className="porthole-water-front"><path d="M-120 137Q-90 121-60 137T0 137T60 137T120 137T180 137T240 137T300 137T360 137V240H-120Z" /></g>
+          <g className="porthole-water-back"><path fill="var(--color-aqua)" d="M-120 124Q-90 108-60 124T0 124T60 124T120 124T180 124T240 124T300 124T360 124V240H-120Z" /></g>
+          <g className="porthole-water-front"><path fill="var(--color-ocean)" d="M-120 137Q-90 121-60 137T0 137T60 137T120 137T180 137T240 137T300 137T360 137V240H-120Z" /></g>
         </>}
         {running && <g className="porthole-bubbles"><circle cx="78" cy="180" r="5" /><circle cx="156" cy="175" r="3" /><circle cx="137" cy="195" r="6" /></g>}
         <path className="porthole-reflection" d="M58 110a64 64 0 0 1 38-49" strokeWidth="7" strokeLinecap="round" />
