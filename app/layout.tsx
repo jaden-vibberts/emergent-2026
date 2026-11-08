@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import PwaSetup from "./PwaSetup";
 import localFont from "next/font/local";
 import SpinSenseHeader from "./SpinSenseHeader";
+import { BottomWaves } from "./WaterDecor";
 import "./globals.css";
 
 const displayFont = localFont({ src: "./fonts/Nunito.ttf", variable: "--font-display", display: "swap", weight: "200 1000" });
@@ -17,5 +18,5 @@ export const metadata: Metadata = {
 export const viewport: Viewport = { width: "device-width", initialScale: 1, themeColor: "#096B9B" };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
-  return <html lang="en" className={`${displayFont.variable} ${bodyFont.variable}`}><body><PwaSetup /><SpinSenseHeader />{children}</body></html>;
+  return <html lang="en" className={`${displayFont.variable} ${bodyFont.variable}`}><body><BottomWaves /><PwaSetup /><SpinSenseHeader />{children}</body></html>;
 }
