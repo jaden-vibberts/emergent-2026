@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import Porthole from "./Porthole";
 import { useEffect, useState } from "react";
 import { elapsedLabel, remainingLabel, statusLabels, STATUS_POLL_MS, isOffline, lastSeenLabel, type MachineView } from "@/lib/status";
 
@@ -37,20 +38,31 @@ export default function LiveMachines({ deviceId }: { deviceId?: string }) {
     return () => { stopped = true; controller.abort(); clearTimeout(timer); clearInterval(clock); };
   }, [deviceId]);
 
+  // Presentation grouping only; the fetched records and their computed statuses are unchanged.
+  const groups = deviceId ? [{ title: "", machines: machines ?? [] }] : [
+    { title: "Washers", machines: (machines ?? []).filter((machine) => machine.id.startsWith("washer")) },
+    { title: "Dryers", machines: (machines ?? []).filter((machine) => machine.id.startsWith("dryer")) },
+    { title: "Other machines", machines: (machines ?? []).filter((machine) => !machine.id.startsWith("washer") && !machine.id.startsWith("dryer")) },
+  ];
+  const NameHeading = deviceId ? "h2" : "h3";
+
   return <>
     <div className="live-line"><span className={`signal ${error ? "signal-warn" : ""}`} />{error ? "Reconnecting" : machines ? "Updates automatically · every 3 seconds" : "Connecting to laundry room…"}</div>
     {error && <p role="alert" className="notice">{error}</p>}
     {!machines && !error && <div className="loading-panel">Loading machine status…</div>}
     {machines?.length === 0 && <div className="loading-panel"><h2>{deviceId ? "Machine not found" : "No machines added yet"}</h2><p>{deviceId ? "Check the QR code or return to all machines." : "Add machines in Supabase to get started."}</p></div>}
-    <div className={deviceId ? "detail-grid" : "machine-grid"}>
-      {machines?.map((machine) => {
+    {groups.filter((group) => group.machines.length > 0).map((group) => <section key={group.title} className={deviceId ? "" : "machine-group"} aria-label={deviceId ? undefined : group.title}>
+      {!deviceId && <div className="machine-group-heading"><h2>{group.title}</h2><span>{group.machines.length} {group.machines.length === 1 ? "machine" : "machines"}</span></div>}
+      <div className={deviceId ? "detail-grid" : "machine-grid porthole-grid"}>
+      {group.machines.map((machine) => {
         const offline = isOffline(machine.last_seen, now);
         const known = !!machine.last_seen;
         const estimate = remainingLabel(machine, now);
         const demo = machine.is_demo;
-        return <article key={machine.id} className={`machine-card ${deviceId ? "machine-detail" : ""} ${offline ? "machine-offline" : ""}`}>
+        return <article key={machine.id} className={`machine-card ${deviceId ? "machine-detail" : "porthole-card"} ${offline ? "machine-offline" : ""}`}>
           <div className="card-top"><span className="machine-kind">{machine.id.startsWith("dryer") ? "DRYER" : machine.id.startsWith("washer") ? "WASHER" : "MACHINE"}</span>{demo && <span className="demo-tag">Demo machine</span>}</div>
-          <h2 className="machine-name">{deviceId ? machine.name : <Link href={`/m/${encodeURIComponent(machine.id)}`}>{machine.name}<span aria-hidden="true" className="card-arrow">↗</span></Link>}</h2>
+          {!deviceId && <Porthole status={offline ? "OFFLINE" : machine.state} />}
+          <NameHeading className="machine-name">{deviceId ? machine.name : <Link href={`/m/${encodeURIComponent(machine.id)}`}>{machine.name}<span aria-hidden="true" className="card-arrow">↗</span></Link>}</NameHeading>
           <p className="location">{machine.location}</p>
           <div className={`status-block status-${offline ? "offline" : machine.state.toLowerCase()}`}>
             <p className="eyebrow">{offline || error ? "Last known status" : "Machine status"}</p>
@@ -66,6 +78,7 @@ export default function LiveMachines({ deviceId }: { deviceId?: string }) {
           {demo && deviceId && <p className="helper demo-explanation">This machine uses simulated data for testing. It does not indicate real laundry availability.</p>}
         </article>;
       })}
-    </div>
+      </div>
+    </section>)}
   </>;
 }

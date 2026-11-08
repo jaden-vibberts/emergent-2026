@@ -114,3 +114,58 @@ button, input, select { font: inherit; }
 @media (min-width: 720px) { .spin-header-inner { flex-direction: row; align-items: center; justify-content: space-between; padding: 36px 36px 38px; }.page-shell { padding-inline: 36px; }.spin-brand-name { font-size: 34px; }.spin-logo { width: 52px; height: 52px; }.spin-brand-caption { font-size: 12px; }.spin-nav a { padding-inline: 17px; font-size: 13px; }.header-wave { height: 44px; }.page-heading { padding-block: 44px 32px; } }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; } }
 @media print { .spin-header { display: none !important; }.page-shell { padding: 0; }.machine-card { box-shadow: none; } }
+
+/* Stage 2: resident home cards only. Detail-page presentation is unchanged. */
+.machine-group { margin-top: var(--space-6); }
+.machine-group + .machine-group { margin-top: var(--space-7); }
+.machine-group-heading { display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-4); margin-bottom: var(--space-4); }
+.machine-group-heading h2 { font-size: 25px; font-weight: 800; letter-spacing: -.6px; }
+.machine-group-heading > span { font-size: 12px; color: var(--color-muted); }
+.porthole-grid { grid-template-columns: minmax(0, 1fr); gap: var(--space-5); }
+.machine-card.porthole-card { position: relative; padding: var(--space-5); border-radius: var(--radius-lg); box-shadow: var(--shadow-soft); }
+.porthole-card .card-top { margin-bottom: 0; }
+.porthole-card .machine-name { font-size: 25px; font-weight: 800; }
+.porthole-card .machine-name a { min-height: 44px; }
+.porthole-card .card-arrow { display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 50%; background: var(--color-background); color: var(--color-ocean); }
+.porthole-card .location { margin-top: 0; }
+.porthole-card .status-block { padding: 0; border: 0; margin: 20px 0; }
+.porthole-card .status-text { font-size: 22px; letter-spacing: -.4px; font-weight: 800; line-height: 1.35; }
+.porthole-card .status-in_use .status-text { color: var(--color-ocean-dark); }
+.porthole-card .status-done .status-text { color: var(--color-done); }
+.porthole-card .status-likely_free .status-text { color: var(--color-free); }
+.porthole-card .machine-facts { font-size: 13px; padding-top: var(--space-3); border-color: var(--color-line); }
+.porthole-card .machine-facts > div { margin-top: var(--space-3); }
+.porthole-card .helper { line-height: 1.6; }
+.porthole { width: min(100%, 224px); margin: 10px auto 16px; }
+.porthole svg { display: block; width: 100%; height: auto; }
+.porthole-halo { fill: var(--color-background); }
+.porthole-rim { fill: var(--color-foam); stroke: var(--color-line); }
+.porthole-inset { fill: var(--color-background); stroke: var(--color-line); }
+.porthole-glass { fill: var(--color-header); }
+.porthole-fasteners { fill: var(--color-line); }
+.porthole-reflection { stroke: var(--color-foam); opacity: .85; }
+.porthole-glyph { stroke: var(--color-ocean-dark); }
+.porthole-water-back { fill: var(--color-aqua); opacity: .65; }
+.porthole-water-front { fill: var(--color-ocean); opacity: .23; }
+.porthole-in_use .porthole-water-back { animation: porthole-wave 9s linear infinite reverse; }
+.porthole-in_use .porthole-water-front { animation: porthole-wave 7s linear infinite; }
+.porthole-bubbles circle { fill: var(--color-foam); stroke: var(--color-ocean); stroke-opacity: .12; animation: porthole-rise 7s ease-in infinite; }
+.porthole-bubbles circle:nth-child(2) { animation-delay: -3s; animation-duration: 8s; }
+.porthole-bubbles circle:nth-child(3) { animation-delay: -5s; animation-duration: 9s; }
+.porthole-done .porthole-glass { fill: var(--color-done-soft); }
+.porthole-done .porthole-water-back, .porthole-done .porthole-water-front { fill: var(--color-done); opacity: .14; }
+.porthole-done .porthole-glyph { stroke: var(--color-done); }
+.porthole-likely_free .porthole-halo { fill: var(--color-free-soft); }
+.porthole-likely_free .porthole-inset { stroke: var(--color-free); stroke-opacity: .22; }
+.porthole-likely_free .porthole-glass { fill: var(--color-foam); }
+.porthole-likely_free .porthole-glyph { stroke: var(--color-free); }
+.porthole-likely_free { filter: drop-shadow(0 0 12px rgb(34 105 79 / 8%)); }
+.porthole-idle .porthole-glass { fill: var(--color-background); }
+.porthole-offline .porthole-glass, .porthole-offline .porthole-halo { fill: var(--color-offline-soft); }
+.porthole-offline .porthole-glyph { stroke: var(--color-offline); }
+.porthole-card.machine-offline { box-shadow: none; }
+.porthole-card.machine-offline .card-arrow { color: var(--color-offline); }
+@keyframes porthole-wave { from { transform: translateX(0); } to { transform: translateX(120px); } }
+@keyframes porthole-rise { 0% { transform: translateY(10px); opacity: 0; } 20% { opacity: .75; } 85% { opacity: .5; } 100% { transform: translateY(-72px); opacity: 0; } }
+@media (min-width: 600px) { .porthole-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }.machine-card.porthole-card { padding: 28px; }.porthole { width: 232px; } }
+@media (prefers-reduced-motion: reduce) { .porthole *, .porthole { animation: none !important; transition: none !important; } }
