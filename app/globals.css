@@ -229,17 +229,13 @@ button, input, select { font: inherit; }
 .usage-dashboard .usage-demo { border-left: 4px solid var(--color-ocean); padding: 14px 18px; }
 .usage-demo-note { color: var(--color-ocean-dark); }
 .usage-heatmap { margin-top: var(--space-5); }
-.heat-1 { --heat-fill: var(--color-heat-1); }
-.heat-2 { --heat-fill: var(--color-heat-2); }
-.heat-3 { --heat-fill: var(--color-heat-3); }
-.heat-4 { --heat-fill: var(--color-heat-4); }
-.heat-5 { --heat-fill: var(--color-heat-5); }
-.heat-cell, .heat-swatch { background: var(--heat-fill); color: var(--color-navy); border-radius: 4px; }
-.heat-4, .heat-5 { color: var(--color-foam); }
+/* Cell backgrounds and contrasting text are computed by the presentation helper. */
+.heat-cell { border-radius: 4px; min-width: 0; font-weight: 650; cursor: pointer; transition: background-color 600ms ease; }
 .heat-empty { background: var(--color-offline-soft); color: var(--color-muted); }
-.heat-cell { min-width: 0; font-weight: 650; cursor: pointer; }
-/* Fade backgrounds only, so low-confidence numbers keep readable contrast. */
-.heat-low-confidence { background: color-mix(in srgb, var(--heat-fill) 40%, var(--color-foam)); color: var(--color-navy); }
+.heat-legend { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; }
+.heat-legend-scale { width: min(100%, 420px); }
+.heat-gradient { height: 14px; border-radius: 7px; margin-top: 8px; border: 1px solid var(--color-line); }
+@media (prefers-reduced-motion: reduce) { .heat-cell { transition: none !important; transition-delay: 0ms !important; } }
 .heat-cell:hover, .heat-selected { outline: 2px solid var(--color-ocean); outline-offset: 1px; position: relative; z-index: 1; }
 .heat-cell:focus-visible { outline: 3px solid var(--color-navy); outline-offset: 2px; position: relative; z-index: 2; }
 .usage-cell-detail { padding: 12px 14px; border-radius: var(--radius-sm); background: var(--color-background); color: var(--color-muted); line-height: 1.6; }

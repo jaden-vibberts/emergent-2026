@@ -1,12 +1,12 @@
 "use client";
 import { useEffect, useState, useTransition } from "react";
+import { heatmapColor, heatmapRange, heatmapPosition, heatmapGradient, rangeLabel } from "./heatmapColors";
 import { useRouter } from "next/navigation";
 import type { DashboardData } from "@/lib/dashboard";
 import type { MachineType, UsageWindow } from "@/lib/usage";
 const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 const hour = (h: number) => `${h % 12 || 12}${h < 12 ? "am" : "pm"}`;
 const percent = (n: number) => `${Math.round(n)}%`;
-const color = (n: number | null) => n === null ? "heat-empty" : n < 20 ? "heat-1" : n < 40 ? "heat-2" : n < 60 ? "heat-3" : n < 80 ? "heat-4" : "heat-5";
 
 export default function Dashboard({ data }: { data: DashboardData }) {
   const [type, setType] = useState<MachineType>("washer");
@@ -18,6 +18,7 @@ export default function Dashboard({ data }: { data: DashboardData }) {
   function change(range: string, demo: boolean) { startTransition(() => router.push(`/dashboard?range=${range}&demo=${demo ? "1" : "0"}`, { scroll: false })); }
   const stats = data.usage.types[type];
   const hasData = stats.has_data && stats.total > 0;
+  const colorRange = heatmapRange(hasData ? stats.buckets.map((bucket) => bucket[metric]) : []);
   const detail = selected === null ? null : stats.buckets[selected];
   const metricLabel = metric === "utilization" ? "Utilization" : "Fully booked";
   function windows(title: string, entries: UsageWindow[]) {
@@ -45,11 +46,14 @@ export default function Dashboard({ data }: { data: DashboardData }) {
         {days.map((day, index) => <div key={day} className="contents"><span className="self-center text-xs font-medium">{day.slice(0, 3)}</span>{stats.buckets.slice(index * 24, index * 24 + 24).map((bucket) => {
           const value = hasData ? bucket[metric] : null;
           const label = `${day} ${hour(bucket.hour)}–${hour(bucket.hour + 1)}: ${value === null ? "No data" : `${percent(value)} ${metricLabel.toLowerCase()}`}; ${bucket.weeks} weeks${bucket.weeks < 2 ? "; low confidence" : ""}`;
-          return <button key={bucket.hour} aria-label={label} title={label} onClick={() => setSelected(index * 24 + bucket.hour)} className={`heat-cell h-9 text-[10px] ${color(value)} ${bucket.weeks < 2 && value !== null ? "heat-low-confidence" : ""} ${selected === index * 24 + bucket.hour ? "heat-selected" : ""}`}>{value === null ? "—" : Math.round(value)}</button>;
+          return <button key={bucket.hour} aria-label={label} title={label} onClick={() => setSelected(index * 24 + bucket.hour)} style={{ ...(value !== null && colorRange ? heatmapColor(heatmapPosition(value, colorRange), bucket.weeks < 2) : {}), transitionDelay: `${bucket.hour * 12}ms` }} className={`heat-cell h-9 text-[10px] ${value === null ? "heat-empty" : ""} ${selected === index * 24 + bucket.hour ? "heat-selected" : ""}`}>{value === null ? "—" : Math.round(value)}</button>;
         })}</div>)}
       </div></div>
       <p role="status" className="usage-cell-detail mt-4 min-h-10 text-sm">{detail ? `${days[detail.day - 1]} ${hour(detail.hour)}–${hour(detail.hour + 1)} · ${hasData && detail[metric] !== null ? `${percent(detail[metric]!)} ${metricLabel.toLowerCase()}` : "No data"} · ${hasData ? detail.weeks : 0} distinct weeks · ${detail.minutes} sampled minutes${detail.weeks < 2 ? " · low confidence" : ""}` : "Hover or tap a cell to inspect the percentage and sample size."}</p>
-      <div className="mt-3 flex flex-wrap items-center gap-3 text-xs text-slate-600"><span>Free / 0%</span>{[0, 20, 40, 60, 80].map((n) => <span key={n} className={`heat-swatch h-4 w-7 ${color(n)}`} aria-label={`${n} to ${n + 20} percent`} />)}<span>Busy / 100%</span><span className="heat-empty ml-2 rounded px-2 py-1">— No data</span></div>
+      <div className="heat-legend mt-4 text-xs text-slate-600">
+        {colorRange ? <div className="heat-legend-scale"><div className="flex justify-between gap-4"><span>Lower · {rangeLabel(colorRange.min)}</span><span>Higher · {rangeLabel(colorRange.max)}</span></div><div className="heat-gradient" style={{ background: heatmapGradient(colorRange) }} role="img" aria-label={`${metricLabel} color scale: ${rangeLabel(colorRange.min)} to ${rangeLabel(colorRange.max)}`} /><p className="mt-2">{metricLabel} · color range for this machine type and date range{colorRange.min === colorRange.max ? " · all measured cells have the same value" : ""}.</p></div> : <p>No measured values to color yet.</p>}
+        <span className="heat-empty rounded px-2 py-1">— No data</span>
+      </div>
       <p className="mt-4 text-xs leading-5 text-slate-500">Faded cells have fewer than 2 distinct weeks and are low confidence. Percentages use one-minute samples; repeated daylight-saving hours are both counted. Missing spring-forward hours contribute no minutes.</p>
       {data.demoShown && <p className="usage-demo-note mt-2 text-xs leading-5">Demo data is modeled on typical dorm laundry patterns, not measured.</p>}
     </section>
