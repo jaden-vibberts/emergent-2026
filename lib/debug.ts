@@ -1,5 +1,4 @@
 export const DEBUG_POLL_MS = 2000;
-export const DEBUG_STALE_MS = 30_000;
 export type DebugReading = { id: number; created_at: string; rms: number; door_open: boolean };
 export type DebugMachine = {
   id: string; name: string; location: string;

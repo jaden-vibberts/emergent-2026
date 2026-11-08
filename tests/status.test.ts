@@ -20,7 +20,7 @@ test("estimates use elapsed run time, never promise zero, and stop when device i
   assert.equal(remainingLabel(machine, now), "estimating...");
   assert.equal(remainingLabel({ ...machine, median_seconds: 120 }, now), "About 1m 30s remaining");
   assert.equal(remainingLabel({ ...machine, median_seconds: 20 }, now), "Taking longer than usual");
-  assert.equal(remainingLabel(machine, now + 16_000), "Waiting for device");
+  assert.equal(remainingLabel(machine, now + 31_000), "Waiting for device");
   assert.equal(remainingLabel({ ...machine, state: "DONE" }, now), null);
   assert.equal(elapsedLabel(-1000), "0s");
 });

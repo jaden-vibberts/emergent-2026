@@ -1,5 +1,10 @@
 @import "tailwindcss";
 :root { color-scheme: light; --ink: #182a2b; --muted: #657372; --line: #dce2df; --green: #245c4c; }
+.machine-card.machine-offline { background: #eceeed; color: #626b67; border-color: #cbd0cd; }
+.machine-offline .status-block { border-color: #929b96; }
+.machine-offline .status-text, .offline-note { color: #626b67; }
+.offline-note { font-size: 13px; line-height: 1.6; margin-top: 12px; }
+.machine-offline .rms-chart { filter: grayscale(1); }
 .notify-panel { margin-top: 24px; border: 1px solid var(--line); padding: 24px; background: white; border-radius: 8px; }
 .notify-panel h2 { font-size: 21px; font-weight: 600; margin-bottom: 8px; }.notify-panel > p { font-size: 13px; line-height: 1.6; color: var(--muted); }
 .install-banner { background: #edf4ef; padding: 14px; border-left: 3px solid var(--green); margin-top: 18px; }

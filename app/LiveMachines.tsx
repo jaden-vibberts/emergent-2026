@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { elapsedLabel, remainingLabel, statusLabels, STATUS_POLL_MS, STALE_AFTER_MS, type MachineView } from "@/lib/status";
+import { elapsedLabel, remainingLabel, statusLabels, STATUS_POLL_MS, isOffline, lastSeenLabel, type MachineView } from "@/lib/status";
 
 export default function LiveMachines({ deviceId }: { deviceId?: string }) {
   const [machines, setMachines] = useState<MachineView[] | null>(null);
@@ -44,25 +44,25 @@ export default function LiveMachines({ deviceId }: { deviceId?: string }) {
     {machines?.length === 0 && <div className="loading-panel"><h2>{deviceId ? "Machine not found" : "No machines added yet"}</h2><p>{deviceId ? "Check the QR code or return to all machines." : "Add machines in Supabase to get started."}</p></div>}
     <div className={deviceId ? "detail-grid" : "machine-grid"}>
       {machines?.map((machine) => {
-        const stale = !!machine.last_seen && now - Date.parse(machine.last_seen) > STALE_AFTER_MS;
+        const offline = isOffline(machine.last_seen, now);
         const known = !!machine.last_seen;
         const estimate = remainingLabel(machine, now);
         const demo = /demo/i.test(machine.name) || /demo/i.test(machine.location);
-        return <article key={machine.id} className={`machine-card ${deviceId ? "machine-detail" : ""}`}>
+        return <article key={machine.id} className={`machine-card ${deviceId ? "machine-detail" : ""} ${offline ? "machine-offline" : ""}`}>
           <div className="card-top"><span className="machine-kind">{machine.id.startsWith("dryer") ? "DRYER" : machine.id.startsWith("washer") ? "WASHER" : "MACHINE"}</span>{demo && <span className="demo-tag">Demo data</span>}</div>
           <h2 className="machine-name">{deviceId ? machine.name : <Link href={`/m/${encodeURIComponent(machine.id)}`}>{machine.name}<span aria-hidden="true" className="card-arrow">↗</span></Link>}</h2>
           <p className="location">{machine.location}</p>
-          <div className={`status-block status-${known ? machine.state.toLowerCase() : "unknown"}`}>
-            <p className="eyebrow">{stale || error ? "Last known status" : "Machine status"}</p>
-            <p className="status-text" role="status">{known ? statusLabels[machine.state] ?? "Unknown" : "Awaiting readings"}</p>
+          <div className={`status-block status-${offline ? "offline" : machine.state.toLowerCase()}`}>
+            <p className="eyebrow">{offline || error ? "Last known status" : "Machine status"}</p>
+            <p className="status-text" role="status">{offline ? "Offline" : statusLabels[machine.state] ?? "Unknown"}</p>
           </div>
           <dl className="machine-facts">
-            <div><dt>Time in this state</dt><dd>{known && machine.state_since ? elapsedLabel(now - Date.parse(machine.state_since)) : "—"}</dd></div>
-            {machine.state === "IN_USE" && <div><dt>Estimated finish</dt><dd>{error ? "Waiting for connection" : estimate}</dd></div>}
+            <div><dt>{offline ? "Time in saved state" : "Time in this state"}</dt><dd>{known && machine.state_since ? elapsedLabel(now - Date.parse(machine.state_since)) : "—"}</dd></div>
+            {!offline && machine.state === "IN_USE" && <div><dt>Estimated finish</dt><dd>{error ? "Waiting for connection" : estimate}</dd></div>}
           </dl>
-          {machine.state === "IN_USE" && machine.median_seconds === null && <p className="helper">An estimate becomes available after 3 completed cycles.</p>}
-          {deviceId && machine.state === "IN_USE" && machine.median_seconds !== null && <p className="helper">Based on the median of {machine.history_count} recent completed cycles. Actual times vary.</p>}
-          {stale && <p className="device-note">Device has stopped reporting. Last reading {elapsedLabel(now - Date.parse(machine.last_seen!))} ago.</p>}
+          {!offline && machine.state === "IN_USE" && machine.median_seconds === null && <p className="helper">An estimate becomes available after 3 completed cycles.</p>}
+          {deviceId && !offline && machine.state === "IN_USE" && machine.median_seconds !== null && <p className="helper">Based on the median of {machine.history_count} recent completed cycles. Actual times vary.</p>}
+          {offline && <><p className="offline-note">{lastSeenLabel(machine.last_seen, now)}</p>{known && <p className="helper">Last saved state: {statusLabels[machine.state] ?? machine.state}</p>}</>}
           {demo && deviceId && <p className="helper demo-explanation">This machine uses simulated data for testing. It does not indicate real laundry availability.</p>}
         </article>;
       })}

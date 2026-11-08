@@ -1,5 +1,16 @@
 export const STATUS_POLL_MS = 3000;
-export const STALE_AFTER_MS = 15_000;
+// Display/push freshness only; independent of machine-state timing and TIME_SCALE.
+export const OFFLINE_AFTER_MS = 30_000;
+export function isOffline(lastSeen: string | null, now: number) {
+  return !lastSeen || !Number.isFinite(Date.parse(lastSeen)) || now - Date.parse(lastSeen) > OFFLINE_AFTER_MS;
+}
+export function lastSeenLabel(lastSeen: string | null, now: number) {
+  if (!lastSeen || !Number.isFinite(Date.parse(lastSeen))) return "No readings received yet";
+  const seconds = Math.max(0, Math.floor((now - Date.parse(lastSeen)) / 1000));
+  if (seconds < 60) return `Last seen ${seconds} seconds ago`;
+  const minutes = Math.floor(seconds / 60);
+  return `Last seen ${minutes} ${minutes === 1 ? "minute" : "minutes"} ago`;
+}
 export type MachineView = {
   id: string; name: string; location: string; state: string;
   state_since: string | null; last_seen: string | null; run_started_at: string | null;
@@ -22,7 +33,7 @@ export function elapsedLabel(milliseconds: number) {
 }
 export function remainingLabel(machine: MachineView, now: number) {
   if (machine.state !== "IN_USE") return null;
-  if (!machine.last_seen || now - Date.parse(machine.last_seen) > STALE_AFTER_MS) return "Waiting for device";
+  if (isOffline(machine.last_seen, now)) return "Waiting for device";
   if (machine.median_seconds === null || !machine.run_started_at) return "estimating...";
   const remaining = machine.median_seconds * 1000 - (now - Date.parse(machine.run_started_at));
   return remaining > 0 ? `About ${elapsedLabel(remaining)} remaining` : "Taking longer than usual";

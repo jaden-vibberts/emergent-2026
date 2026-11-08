@@ -2,8 +2,8 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { chartData, DEBUG_POLL_MS, DEBUG_STALE_MS, type DebugMachine } from "@/lib/debug";
-import { elapsedLabel } from "@/lib/status";
+import { chartData, DEBUG_POLL_MS, type DebugMachine } from "@/lib/debug";
+import { elapsedLabel, isOffline, lastSeenLabel } from "@/lib/status";
 
 type Snapshot = { machines: DebugMachine[]; threshold: number; time_scale: number; server_time: string };
 const time = (value: string | number) => new Date(value).toISOString().slice(11, 23);
@@ -47,19 +47,19 @@ export default function DebugPage() {
     {!snapshot && !error && <p className="loading-panel">Loading device readings…</p>}
     {snapshot?.machines.length === 0 && <p className="loading-panel">No machines registered.</p>}
     <div className="debug-grid">{snapshot?.machines.map((machine) => {
-      const stale = machine.last_seen !== null && now - Date.parse(machine.last_seen) > DEBUG_STALE_MS;
-      const missing = machine.last_seen === null;
+      const offline = isOffline(machine.last_seen, now);
       const chart = chartData(machine.readings, snapshot.threshold);
       const demo = /demo/i.test(`${machine.name} ${machine.location}`);
-      return <article key={machine.id} className={`machine-card debug-card ${stale || missing ? "debug-stale" : ""}`}>
+      return <article key={machine.id} className={`machine-card debug-card ${offline ? "machine-offline" : ""}`}>
         <div className="card-top"><Link className="machine-name" href={`/m/${encodeURIComponent(machine.id)}`}>{machine.name}</Link>{demo && <span className="demo-tag">Demo data</span>}</div>
         <p className="location">{machine.id} · {machine.location}</p>
+        <p className="status-text" role="status">{offline ? "Offline" : "Online"}</p>
+        {offline && <p className="offline-note">{lastSeenLabel(machine.last_seen, now)}</p>}
         <dl className="machine-facts">
           <div><dt>Current saved state</dt><dd>{machine.state ?? "No state row"}</dd></div>
           <div><dt>Time in state</dt><dd>{machine.state_since ? elapsedLabel(now - Date.parse(machine.state_since)) : "—"}</dd></div>
           <div><dt>Since last reading</dt><dd>{machine.last_seen ? elapsedLabel(now - Date.parse(machine.last_seen)) : "Never received"}</dd></div>
         </dl>
-        {(stale || missing) && <p className="debug-alert">{missing ? "No readings received" : "No reading for over 30 seconds"}</p>}
         {demo && <p className="helper">Demo readings for testing; not real laundry activity.</p>}
         {machine.readings.length ? <>
           <figure className="rms-chart">

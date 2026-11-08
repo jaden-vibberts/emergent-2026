@@ -2,6 +2,7 @@ import "server-only";
 import * as webpush from "web-push";
 import { getSupabase } from "./supabase";
 import { validateSubscription, type BrowserSubscription } from "./pushValidation";
+import { isOffline } from "./status";
 
 export function pushSettings() {
   const publicKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
@@ -21,10 +22,29 @@ export async function deliverMachinePush(machineId: string, machineName: string)
       return;
     }
     const db = getSupabase();
+    const machineIsOnline = async () => {
+      const { data, error } = await db.from("machine_state").select("last_seen").eq("machine_id", machineId).maybeSingle();
+      // Fail closed if freshness cannot be established.
+      if (error) console.error("Push freshness check failed; not sending", { machineId, code: error.code });
+      return !error && !!data && !isOffline(data.last_seen, Date.now());
+    };
+    if (!await machineIsOnline()) {
+      console.info("Push deferred: machine offline or freshness unavailable", { machineId });
+      return;
+    }
     // One bounded batch per reading; later readings drain any remaining queued work.
     const { data: jobs, error } = await db.rpc("claim_machine_push", { p_machine_id: machineId });
     if (error) { console.error("Push queue claim failed: check step4.sql", { machineId, code: error.code }); return; }
     await Promise.all((jobs ?? []).map(async (job: { id: string; cycle_id: string; subscription_json: BrowserSubscription }) => {
+      // Re-check immediately before sending in case claiming the queue was delayed.
+      if (!await machineIsOnline()) {
+        const { error: releaseError } = await db.from("push_subscriptions")
+          .update({ delivery_status: "queued", claimed_at: null })
+          .eq("id", job.id).eq("delivery_status", "sending");
+        console.info("Push deferred before send: machine offline or freshness unavailable", { machineId, subscriptionId: job.id });
+        if (releaseError) console.error("Unsent push claim could not be released", { subscriptionId: job.id, code: releaseError.code });
+        return;
+      }
       try {
         const invalid = validateSubscription(job.subscription_json);
         if (invalid) throw new Error(invalid);
