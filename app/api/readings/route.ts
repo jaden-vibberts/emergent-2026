@@ -2,6 +2,7 @@ import { createHash, timingSafeEqual } from "node:crypto";
 import { getSupabase } from "@/lib/supabase";
 import { nextState, type MachineState } from "@/lib/stateMachine";
 import { MACHINE_CONFIG } from "@/lib/machine-config";
+import { validateReading, type DeviceReading } from "@/lib/validateReading";
 
 export const runtime = "nodejs";
 
@@ -13,27 +14,33 @@ export async function POST(request: Request) {
   if (!supplied || !timingSafeEqual(digest(secret), digest(supplied))) {
     return Response.json({ error: "Invalid device key." }, { status: 401 });
   }
-  let body;
-  try { body = await request.json(); }
-  catch { return Response.json({ error: "Send valid JSON." }, { status: 400 }); }
-  if (!body || typeof body.device !== "string" || !/^[a-zA-Z0-9_-]{1,80}$/.test(body.device) ||
-      typeof body.rms !== "number" || !Number.isFinite(body.rms) || body.rms < 0 ||
-      typeof body.door_open !== "boolean") {
-    return Response.json({ error: "Expected device, nonnegative finite rms, and boolean door_open." }, { status: 400 });
-  }
+  let rawBody = "";
+  const invalid = (message: string) => {
+    // Authenticated validation failures only. Do not include headers or secrets.
+    console.warn("Reading validation failed", { message, rawBody });
+    return Response.json({ error: message, message }, { status: 400 });
+  };
+  try { rawBody = await request.text(); }
+  catch { return invalid("request body could not be read"); }
+  let parsed: unknown;
+  try { parsed = JSON.parse(rawBody); }
+  catch { return invalid("request body must be valid JSON"); }
+  const validationError = validateReading(parsed);
+  if (validationError) return invalid(validationError);
+  const body = parsed as DeviceReading;
   try {
     const db = getSupabase();
+    const { data: machine, error: machineError } = await db.from("machines").select("name, location").eq("id", body.device).maybeSingle();
+    if (machineError) throw machineError;
+    if (!machine) return invalid(`unknown device: ${body.device}`);
     if (request.headers.get("x-demo-data") === "true") {
-      const { data: machine, error } = await db.from("machines").select("name, location").eq("id", body.device).maybeSingle();
-      if (error) throw error;
-      if (!machine || !machine.name.includes("(demo)") || !machine.location.toLowerCase().includes("demo")) {
-        return Response.json({ error: "Simulator requires a machine with demo labels in its name and location." }, { status: 400 });
-      }
+      if (!machine.name.includes("(demo)")) return invalid(`x-demo-data requires device ${body.device} to have '(demo)' in its name`);
+      if (!machine.location.toLowerCase().includes("demo")) return invalid(`x-demo-data requires device ${body.device} to have 'demo' in its location`);
     }
     for (let attempt = 0; attempt < 5; attempt++) {
       const { data, error } = await db.from("machine_state").select("*").eq("machine_id", body.device).maybeSingle();
       if (error) throw error;
-      if (!data) return Response.json({ error: "Unknown machine or missing machine_state row." }, { status: 404 });
+      if (!data) return invalid(`missing machine_state row for device: ${body.device}`);
       const current = data as MachineState;
       if (!Number.isInteger(current.revision)) throw new Error("Run step2.sql");
       // Timestamp on the server, after reading the current row. Preserve monotonic order.
