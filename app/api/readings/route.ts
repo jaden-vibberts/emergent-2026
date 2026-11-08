@@ -50,7 +50,8 @@ export async function POST(request: Request) {
       const at = new Date(Math.max(Date.now(), current.last_seen ? Date.parse(current.last_seen) + 1 : 0)).toISOString();
       const next = nextState(current, { rms: body.rms, door_open: body.door_open, at });
       const { data: saved, error: saveError } = await db.rpc("save_machine_reading", {
-        p_machine_id: body.device, p_expected_revision: current.revision, p_next: next,
+        p_machine_id: body.device, p_expected_revision: current.revision,
+        p_next: { ...next, is_demo: request.headers.get("x-demo-data") === "true" },
       });
       if (saveError) throw saveError;
       if (saved) {
